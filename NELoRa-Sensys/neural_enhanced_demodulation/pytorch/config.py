@@ -59,7 +59,7 @@ def create_parser():
     parser.add_argument(
         '--train_iters',
         type=int,
-        default=150,
+        default=100000,
         help=
         'The number of training iterations to run (you can Ctrl-C out earlier if you want).'
     )

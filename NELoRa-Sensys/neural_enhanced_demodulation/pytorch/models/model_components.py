@@ -96,8 +96,10 @@ class maskCNNModel(nn.Module):
         self.fc2 = nn.Linear(opts.fc1_dim, opts.freq_size * opts.y_image_channel)
 
     def forward(self, x):
+        # print('=================Teacher input: {}====================='.format(x.shape))
         out = x.transpose(2, 3).contiguous()
         out = self.conv(out)
+        # print('=================Teacher: fmap{}====================='.format(out.shape))
         out = out.transpose(1, 2).contiguous()
         out = out.view(out.size(0), out.size(1), -1)
         out, _ = self.lstm(out)
@@ -115,7 +117,7 @@ class maskCNNModel(nn.Module):
 
 class StudentMaskCNNModel(nn.Module):
     def __init__(self, opts):
-        super(maskCNNModel, self).__init__()
+        super(StudentMaskCNNModel, self).__init__()
         self.opts = opts
 
         self.conv = nn.Sequential(
@@ -126,8 +128,8 @@ class StudentMaskCNNModel(nn.Module):
 
             # cnn2
             nn.ZeroPad2d((0, 0, 3, 3)),
-            nn.Conv2d(64, 64, kernel_size=(7, 1), dilation=(1, 1)),
-            nn.BatchNorm2d(64), nn.ReLU(),
+            # nn.Conv2d(64, 8, kernel_size=(7, 1), dilation=(1, 1)),
+            # nn.BatchNorm2d(8), nn.ReLU(),
 
             # # cnn3
             # nn.ZeroPad2d(2),
@@ -168,9 +170,16 @@ class StudentMaskCNNModel(nn.Module):
         self.fc1 = nn.Linear(2 * opts.lstm_dim, opts.fc1_dim)
         self.fc2 = nn.Linear(opts.fc1_dim, opts.freq_size * opts.y_image_channel)
 
+        self.BN = nn.BatchNorm2d(8)
+        self.conv2d = nn.Conv2d(64, 8, kernel_size=(7, 1), dilation=(1, 1))
+
     def forward(self, x):
+        # print('=================Student input: {}====================='.format(x.shape))
         out = x.transpose(2, 3).contiguous()
         out = self.conv(out)
+        out = self.conv2d(out)
+        out = F.relu(self.BN(out))
+        # print('=================Student fmap: {}====================='.format(out.shape))
         out = out.transpose(1, 2).contiguous()
         out = out.view(out.size(0), out.size(1), -1)
         out, _ = self.lstm(out)

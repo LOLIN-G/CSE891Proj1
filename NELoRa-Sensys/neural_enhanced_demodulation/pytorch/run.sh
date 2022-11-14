@@ -1,1 +1,2 @@
-python main.py --dir_comment sf_125k --batch_size 16 --root_path . --data_dir data/Lora/sf_125k --groundtruth_code 35 --normalization --train_iter 100000 --ratio_bt_train_and_test 0.8 --network end2end
+# python main.py --dir_comment sf_125k --batch_size 16 --root_path . --data_dir data/Lora/sf_125k --groundtruth_code 35 --normalization --train_iter 100000 --ratio_bt_train_and_test 0.8 --network end2end
+python3 main_TS_train.py --scaling_for_imaging_loss 1 --lr 0.001
